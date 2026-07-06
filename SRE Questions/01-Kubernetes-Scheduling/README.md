@@ -1011,7 +1011,7 @@ Kubernetes scheduling works in three phases: filtering, scoring, and binding. In
 
 # Objective
 
-In real production systems (large EKS clusters like Life360-scale infrastructure), scheduling failures are rarely simple.
+In real production systems (large EKS clusters like <Company_name>-scale infrastructure), scheduling failures are rarely simple.
 
 They are often:
 - Cascading
@@ -1782,3 +1782,193 @@ In a production incident involving scheduling failures, I first determine the bl
 ---
 
 # End of Kubernetes Scheduling Module
+
+
+# 01 - Kubernetes Scheduling (Part 6)
+
+## Final Revision Sheet — Senior SRE Interview Mastery
+
+---
+
+# Objective
+
+This is a **high-density revision layer** of everything covered in Kubernetes Scheduling.
+
+Use this before interviews to quickly recall:
+- Failure patterns
+- Debugging flow
+- Key commands
+- Senior-level framing
+
+---
+
+# Core Truths About Kubernetes Scheduling
+
+- Scheduling is deterministic
+- Every failure has a constraint behind it
+- “Pending” is never random
+- Scheduler only makes decisions based on available cluster state
+- Most real incidents are multi-factor, not single cause
+
+---
+
+# Golden Debug Command
+
+    kubectl describe pod <pod-name>
+
+Always check:
+
+    Events:
+
+This alone resolves 70% of interview scenarios.
+
+---
+
+# 6 Scheduling Constraint Groups
+
+## 1. Resource Constraints
+- CPU
+- Memory
+
+## 2. Node Constraints
+- Taints
+- Node readiness
+- Node selectors
+
+## 3. Storage Constraints
+- PVC binding
+- AZ mismatch
+
+## 4. Policy Constraints
+- ResourceQuota
+- LimitRange
+
+## 5. Topology Constraints
+- Zone spreading
+- Affinity rules
+
+## 6. Infrastructure Constraints
+- Autoscaler delay
+- Scheduler saturation
+
+---
+
+# Top 12 Failure Patterns (Must Remember)
+
+1. Insufficient CPU
+2. Insufficient Memory
+3. Node Taints
+4. Missing Tolerations
+5. Node Selector mismatch
+6. Affinity conflict
+7. PVC Pending
+8. ResourceQuota exceeded
+9. LimitRange blocking
+10. Node NotReady
+11. Disk Pressure
+12. Topology spread failure
+
+---
+
+# Debugging Flow (Mental Model)
+
+    Pending Pod
+        |
+        v
+    Check Events (kubectl describe pod)
+        |
+        v
+    Identify constraint type:
+        - Resource?
+        - Policy?
+        - Storage?
+        - Node?
+        - Topology?
+        - Infra?
+        |
+        v
+    Validate cluster state
+        |
+        v
+    Apply fix
+        |
+        v
+    Prevent recurrence
+
+---
+
+# Key Commands (Must Know)
+
+    kubectl get pods -A
+    kubectl describe pod <pod>
+    kubectl get nodes
+    kubectl top nodes
+    kubectl get events -A
+    kubectl get pvc
+    kubectl describe quota
+
+---
+
+# Senior vs Junior Thinking
+
+## Junior
+- Restart Pod
+- Guess CPU issue
+
+## Mid-level
+- Check CPU / Memory metrics
+- Look at node status
+
+## Senior
+- Identify scheduling predicate failure
+- Validate multi-layer constraints
+- Check system-wide capacity and topology
+
+## Principal
+- Identify systemic design flaw
+- Fix architecture, not symptoms
+- Optimize scheduling behavior at scale
+
+---
+
+# Interview “Perfect Answer” (Memorize)
+
+When a Pod is stuck in Pending, I first inspect `kubectl describe pod` and analyze scheduler events, which directly indicate the failed scheduling predicate. I then classify the issue into resource constraints, node constraints, storage constraints, policy constraints, topology constraints, or infrastructure constraints. After identifying the category, I validate cluster state using node and metrics data. Once confirmed, I apply immediate mitigation such as scaling nodes or adjusting constraints, and then implement long-term fixes like improving autoscaling behavior, reducing scheduling complexity, and preventing cluster fragmentation.
+
+---
+
+# Common Interview Traps
+
+- Assuming Pending = CPU issue (wrong)
+- Ignoring affinity and topology constraints
+- Not checking PVC binding issues
+- Forgetting autoscaler delay scenarios
+- Overlooking multi-zone scheduling failures
+
+---
+
+# High-Impact Insight
+
+Most real-world scheduling failures are NOT:
+- CPU shortage
+
+They ARE:
+- Constraint conflicts
+- Over-restriction
+- Fragmentation
+- Delayed capacity provisioning
+
+---
+
+# Final Takeaways
+
+- Scheduling is a constraint-solving system
+- Pending = unsatisfied constraints, not errors
+- Events are the most important signal
+- Real failures are multi-dimensional
+- Senior engineers think in systems, not symptoms
+
+---
+
+# End of Module 01
+
