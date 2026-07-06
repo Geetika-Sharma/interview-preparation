@@ -1003,13 +1003,446 @@ Kubernetes scheduling works in three phases: filtering, scoring, and binding. In
 
 ---
 
+# 01 - Kubernetes Scheduling (Part 4)
+
+## Advanced Scheduling Edge Cases — Production Failures at Scale
+
+---
+
+# Objective
+
+In real production systems (large EKS clusters like Life360-scale infrastructure), scheduling failures are rarely simple.
+
+They are often:
+- Cascading
+- Multi-factor
+- Non-obvious
+- Distributed across constraints
+
+This section focuses on **real-world edge cases that senior engineers are expected to debug under pressure**.
+
+---
+
+# 1. Over-Constrained Cluster (Silent Failure Mode)
+
+## Definition
+
+A cluster where enough capacity exists in theory, but **no valid node satisfies all constraints simultaneously**.
+
+---
+
+## Why it happens
+
+- Too many affinity rules
+- Strict topology spread constraints
+- Overuse of node selectors
+- Tight taints across node groups
+
+---
+
+## Symptoms
+
+- Nodes have free CPU and memory
+- Pods remain Pending indefinitely
+- No clear “resource exhausted” message
+
+---
+
+## Root Cause Pattern
+
+    CPU OK
+    Memory OK
+    BUT
+    No node satisfies ALL constraints together
+
+---
+
+## Fix
+
+- Relax affinity rules
+- Reduce topology constraints
+- Remove unnecessary node selectors
+- Review platform-level scheduling policies
+
+---
+
+# 2. Multi-Zone Fragmentation Problem
+
+## Definition
+
+Cluster capacity exists, but is unevenly distributed across availability zones.
+
+---
+
+## Example
+
+    zone-a → full
+    zone-b → full
+    zone-c → empty capacity BUT wrong instance type
+
+---
+
+## Why it happens
+
+- Uneven autoscaling across AZs
+- Node group imbalance
+- Traffic skew
+
+---
+
+## Symptoms
+
+- Pods Pending only during scaling events
+- Some AZs underutilized, others overloaded
+
+---
+
+## Fix
+
+- Balance node groups per AZ
+- Use topology-aware autoscaling
+- Relax strict zone affinity
+
+---
+
+# 3. Scheduler Starvation (High Load Scenario)
+
+## Definition
+
+Some Pods never get scheduled because scheduler queue is overloaded.
+
+---
+
+## Why it happens
+
+- Too many Pending Pods
+- High churn in cluster
+- Large-scale deployment rollouts
+
+---
+
+## Symptoms
+
+- Scheduling delay increases gradually
+- No explicit error in events
+- Pods eventually schedule after long delay
+
+---
+
+## Root Cause
+
+Scheduler is CPU-bound internally due to:
+- Node evaluation cost
+- Complex predicates
+- Large cluster size
+
+---
+
+## Fix
+
+- Reduce scheduling complexity
+- Break deployments into batches
+- Scale scheduler replicas (if supported)
+
+---
+
+# 4. Affinity Explosion Problem
+
+## Definition
+
+Too many affinity rules cause combinatorial filtering explosion.
+
+---
+
+## Example
+
+Pod requires:
+- zone = us-east-1a OR 1b
+- instance-type = m6.large OR m6.xlarge
+- node-label = gpu=true OR high-mem=true
+
+---
+
+## Result
+
+Very few nodes satisfy all conditions simultaneously.
+
+---
+
+## Symptoms
+
+- Sudden spike in Pending Pods
+- No resource exhaustion errors
+- Hard-to-debug scheduling failures
+
+---
+
+## Fix
+
+- Simplify affinity rules
+- Use soft preferences instead of hard requirements
+
+---
+
+# 5. PVC Zone Mismatch Failure
+
+## Definition
+
+Storage volumes are tied to specific AZs, but Pods are scheduled elsewhere.
+
+---
+
+## Why it happens
+
+- EBS volumes are AZ-specific
+- Pod affinity ignores storage locality
+
+---
+
+## Example
+
+    PVC in zone-a
+    Pod scheduled in zone-b → FAIL
+
+---
+
+## Symptoms
+
+- Pending Pods with PVC errors
+- Storage-related scheduling failure
+
+---
+
+## Fix
+
+- Align node groups with storage zones
+- Use volume binding topology
+
+---
+
+# 6. Node Pool Drift (Configuration Drift)
+
+## Definition
+
+Node labels and scheduling expectations diverge over time.
+
+---
+
+## Why it happens
+
+- Manual node updates
+- Auto-scaling group inconsistencies
+- Platform configuration changes
+
+---
+
+## Symptoms
+
+- NodeSelector mismatches
+- Unexpected scheduling failures after deployments
+
+---
+
+## Fix
+
+- Reconcile node labels
+- Enforce infrastructure as code (Terraform)
+
+---
+
+# 7. Priority Inversion Scheduling Issue
+
+## Definition
+
+Lower priority Pods consume resources before higher priority Pods arrive.
+
+---
+
+## Why it happens
+
+- No preemption enabled
+- Burst workloads
+- Improper priority class setup
+
+---
+
+## Symptoms
+
+- High-priority Pods stuck Pending
+- Cluster appears “full” even when it is not
+
+---
+
+## Fix
+
+- Enable preemption
+- Define proper priority classes
+
+---
+
+# 8. Scheduler Cache Staleness Issue
+
+## Definition
+
+Scheduler decisions are made using slightly outdated cluster state.
+
+---
+
+## Why it matters
+
+At scale, even small delays cause:
+- Incorrect placement decisions
+- Temporary scheduling conflicts
+
+---
+
+## Symptoms
+
+- Pods scheduled then immediately fail
+- Inconsistent scheduling behavior
+
+---
+
+## Fix
+
+- Increase scheduler sync frequency
+- Reduce cluster churn
+
+---
+
+# 9. Cascading Scheduling Failure
+
+## Definition
+
+One scheduling issue triggers multiple downstream scheduling failures.
+
+---
+
+## Example
+
+- Node group becomes NotReady
+- Capacity drops suddenly
+- Autoscaler reacts slowly
+- Thousands of Pods become Pending
+
+---
+
+## Result
+
+Full deployment degradation
+
+---
+
+## Fix
+
+- Improve node health monitoring
+- Faster autoscaling triggers
+- Circuit-break deployment rollouts
+
+---
+
+# 10. Hidden Capacity (False Full Cluster)
+
+## Definition
+
+Cluster appears full due to fragmentation, not actual resource exhaustion.
+
+---
+
+## Why it happens
+
+- Small unusable capacity blocks remain across nodes
+- No single node can fit large requests
+
+---
+
+## Symptoms
+
+- CPU available globally
+- But no node can schedule large Pods
+
+---
+
+## Fix
+
+- Enable bin-packing optimization
+- Right-size workloads
+- Use cluster rebalancing
+
+---
+
+# Debugging Flow (Advanced)
+
+    Pending Pods Spike
+            |
+            v
+    Check Events
+            |
+            v
+    Is it resource issue?
+        | YES → CPU/MEM
+        |
+        NO
+        |
+        v
+    Check affinity / topology
+        |
+        v
+    Check PVC / storage locality
+        |
+        v
+    Check node pool health
+        |
+        v
+    Check autoscaler delay
+        |
+        v
+    Check scheduler saturation
+        |
+        v
+    Identify systemic constraint conflict
+
+---
+
+# Senior SRE Mental Model
+
+Junior:
+- “Cluster is full”
+
+Mid-level:
+- “Check CPU and memory usage”
+
+Senior:
+- “Cluster is over-constrained due to scheduling policy interactions”
+
+Principal:
+- “This is a systemic capacity architecture problem, not a node-level issue”
+
+---
+
+# Interview Answer Template
+
+At scale, Kubernetes scheduling failures are rarely due to simple resource exhaustion. Instead, they are caused by interactions between constraints such as affinity rules, topology spread, node selectors, storage locality, and autoscaling latency. I start by analyzing pod events to identify the scheduling predicate failure, then validate cluster state across nodes, zones, and storage layers. I categorize the issue into resource, policy, or topology constraints and determine whether the root cause is configuration, capacity fragmentation, or infrastructure delay. Finally, I apply immediate mitigation and design-level fixes such as relaxing constraints, improving autoscaling behavior, or restructuring node pools.
+
+---
+
+# Key Takeaways
+
+- Most real failures are multi-factor, not single cause
+- “Cluster full” often means “over-constrained”
+- Scheduling issues scale non-linearly with cluster size
+- Affinity + topology is a common hidden failure source
+- Senior engineers think in system constraints, not symptoms
+
+---
+
 # Next Section
 
-## Part 4 - Advanced Scheduling Edge Cases
+## Part 5 - Production Incident Playbooks
 
 We will cover:
-- Real-world cascading scheduling failures
-- Multi-zone outages
-- Scheduler starvation scenarios
-- Over-constrained clusters
-- Large-scale production incidents (<Company_name>-level)
+- Real-world outage scenarios
+- Step-by-step incident response
+- Kubernetes + AWS combined failures
+- Life360-scale cascading failures
+- On-call debugging simulation
