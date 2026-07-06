@@ -374,13 +374,406 @@ When diagnosing Kubernetes networking issues, I first determine whether the fail
 
 ---
 
-# Next Section
+ # 02 - Kubernetes Networking (Part 2)
 
-## 03 - Cross-Service Cascading Failures
+## Deep Debugging, Edge Cases, and Real Production Incidents
 
-We will cover:
-- Distributed failure propagation
-- Retry storms
-- Circuit breaker failures
-- Kafka / queue backpressure collapse
-- Real production incident chains at scale
+---
+
+# Objective
+
+This section goes beyond basic networking failures and focuses on:
+
+- Hard-to-debug intermittent issues
+- Cross-layer networking breakdowns
+- Production-scale incident patterns
+- Senior SRE-level diagnosis under ambiguity
+
+---
+
+# 1. Intermittent Connectivity Failures
+
+## Definition
+
+Requests sometimes succeed and sometimes fail between services.
+
+---
+
+## Why this happens
+
+Intermittent failures usually indicate **partial network degradation**, not full outage.
+
+Common causes:
+
+- Packet drops at CNI layer
+- Node-specific network corruption
+- DNS cache inconsistency
+- Load balancer uneven routing
+- TCP connection reuse issues
+
+---
+
+## Symptoms
+
+- 1–5% request failure rate
+- No consistent pattern
+- Logs show mixed success/failure
+
+---
+
+## Debug Approach
+
+Check in this order:
+
+    1. CoreDNS logs
+    2. Node-level packet drops
+    3. CNI plugin health
+    4. kube-proxy endpoint consistency
+
+---
+
+## Fix
+
+- Restart affected CNI pods on bad nodes
+- Replace unhealthy nodes
+- Enable better observability (eBPF tracing if available)
+
+---
+
+# 2. DNS Intermittency (Most Common Hidden Issue)
+
+## Definition
+
+DNS works but occasionally fails or is slow.
+
+---
+
+## Root Causes
+
+### 1. CoreDNS CPU throttling
+- HPA not configured correctly
+
+### 2. Connection saturation
+- Too many concurrent queries
+
+### 3. Upstream resolver latency (VPC DNS)
+
+### 4. Node-level DNS cache corruption
+
+---
+
+## Symptoms
+
+- Sporadic "timeout resolving service"
+- Latency spikes in service calls
+- Higher failure rate during traffic bursts
+
+---
+
+## Fix
+
+- Scale CoreDNS horizontally
+- Enable NodeLocal DNSCache
+- Optimize application retry behavior
+
+---
+
+# 3. Cross-Zone Latency Degradation
+
+## Definition
+
+Traffic between zones becomes slow but not fully broken.
+
+---
+
+## Root Causes
+
+- AWS inter-AZ bandwidth saturation
+- Asymmetric routing paths
+- Load balancer uneven distribution
+- VPC peering latency spikes
+
+---
+
+## Symptoms
+
+- Requests succeed but slow only across zones
+- Intra-zone traffic is healthy
+- Elevated p99 latency
+
+---
+
+## Fix
+
+- Enforce zone-aware routing
+- Reduce cross-zone dependencies
+- Tune load balancer distribution policies
+
+---
+
+# 4. Service Discovery Delay (Endpoints Staleness)
+
+## Definition
+
+Services take time to discover new Pods or remove old ones.
+
+---
+
+## Why it happens
+
+- kube-proxy delay in syncing endpoints
+- Controller lag in endpoint updates
+- Large-scale endpoint churn
+
+---
+
+## Symptoms
+
+- Requests hit terminating Pods
+- New Pods not receiving traffic immediately
+- Uneven traffic distribution
+
+---
+
+## Fix
+
+- Reduce endpoint churn rate
+- Optimize readiness probes
+- Switch to IPVS or eBPF-based routing
+
+---
+
+# 5. Packet Loss at Scale
+
+## Definition
+
+Packets are dropped intermittently in cluster networking layer.
+
+---
+
+## Root Causes
+
+### 1. Node network interface saturation
+### 2. Kernel buffer exhaustion
+### 3. CNI misconfiguration
+### 4. MTU mismatch causing fragmentation loss
+
+---
+
+## Symptoms
+
+- TCP retransmissions increase
+- gRPC timeouts
+- Intermittent API failures
+
+---
+
+## Fix
+
+- Increase node networking limits
+- Align MTU across cluster
+- Upgrade CNI plugin version
+
+---
+
+# 6. NAT Gateway Bottleneck (External API Failures)
+
+## Definition
+
+Pods cannot reliably reach external services.
+
+---
+
+## Root Causes
+
+- NAT gateway bandwidth saturation
+- Port exhaustion (SNAT limits)
+- Too many outbound connections
+
+---
+
+## Symptoms
+
+- External APIs timeout
+- Internal services unaffected
+- Increased connection failures
+
+---
+
+## Fix
+
+- Add multiple NAT gateways
+- Use NAT scaling strategies
+- Reduce connection churn (keep-alives)
+
+---
+
+# 7. CNI Control Plane Split Brain
+
+## Definition
+
+Different nodes have inconsistent network state.
+
+---
+
+## Why it happens
+
+- CNI agent restart failures
+- Partial configuration rollout
+- Node reboot during updates
+
+---
+
+## Symptoms
+
+- Some Pods reachable, others not
+- Random cross-node failures
+- Inconsistent routing behavior
+
+---
+
+## Fix
+
+- Restart CNI daemonset
+- Drain and replace affected nodes
+- Ensure rollout consistency
+
+---
+
+# 8. kube-proxy Endpoint Drift
+
+## Definition
+
+kube-proxy routing table is outdated.
+
+---
+
+## Root Causes
+
+- Endpoint update delays
+- Large service churn
+- kube-proxy crash loops
+
+---
+
+## Symptoms
+
+- Requests go to terminated Pods
+- Uneven traffic distribution
+- Random 5xx errors
+
+---
+
+## Fix
+
+- Restart kube-proxy
+- Switch to IPVS or eBPF
+- Reduce service churn
+
+---
+
+# 9. Hidden Network Policy Misconfiguration
+
+## Definition
+
+NetworkPolicies silently block traffic.
+
+---
+
+## Why it happens
+
+- Overly strict ingress/egress rules
+- Missing namespace selectors
+- Policy conflicts
+
+---
+
+## Symptoms
+
+- Only some services can communicate
+- No infrastructure errors
+- Appears as application bug
+
+---
+
+## Fix
+
+- Audit all NetworkPolicies
+- Use allow-list instead of deny-by-default incorrectly
+- Test policy changes incrementally
+
+---
+
+# 10. Multi-Layer Failure Chain (Real Incident Pattern)
+
+## Example
+
+1. DNS latency increases
+2. Service retries increase
+3. NAT gateway saturates
+4. Packet loss increases
+5. App timeouts spike
+6. Retry storms amplify load
+
+---
+
+## Result
+
+A small network issue becomes a **full system outage**
+
+---
+
+# Debugging Strategy (Senior Level)
+
+    Step 1: Identify symptom type
+        - DNS issue?
+        - Latency issue?
+        - Connectivity issue?
+
+    Step 2: Identify layer
+        - DNS (CoreDNS)
+        - Service routing (kube-proxy)
+        - Pod networking (CNI)
+        - Node networking
+        - VPC layer (AWS)
+
+    Step 3: Isolate scope
+        - Single node?
+        - Single AZ?
+        - Entire cluster?
+
+    Step 4: Validate metrics + logs
+
+---
+
+# Senior SRE Mental Model
+
+Junior:
+- “Network is broken”
+
+Mid-level:
+- “Check DNS and restart services”
+
+Senior:
+- “Which layer in the network stack is degrading: DNS, service routing, pod networking, or VPC?”
+
+Principal:
+- “Is this a systemic network saturation issue or a cascading failure across multiple layers?”
+
+---
+
+# Interview Answer Template
+
+When diagnosing Kubernetes networking issues, I first classify whether the issue is DNS resolution, service routing, pod-to-pod communication, or external connectivity. I start by checking CoreDNS for DNS issues, followed by kube-proxy and endpoint consistency for service routing problems. If pod-level communication is affected, I inspect the CNI layer for packet loss, MTU mismatches, or agent failures. Finally, I validate AWS VPC components such as NAT gateways, security groups, and route tables. Once the failing layer is identified, I apply targeted remediation and then focus on systemic fixes such as scaling CoreDNS, simplifying network policies, or improving CNI stability.
+
+---
+
+# Key Takeaways
+
+- Most networking issues are intermittent, not total failures
+- DNS is the most common bottleneck
+- CNI issues are the hardest to debug
+- AWS networking often mimics Kubernetes failures
+- Failures are usually multi-layered, not single-component
+
+---
