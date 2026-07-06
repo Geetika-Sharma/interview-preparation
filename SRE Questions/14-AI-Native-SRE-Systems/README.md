@@ -1,4 +1,4 @@
-# 14 - AI-Native SRE Systems (Life360 Differentiator Module)
+# 14 - AI-Native SRE Systems
 
 A production-grade deep dive into how modern SRE teams use AI (LLMs + agents) as a core part of incident response, debugging, automation, and infrastructure management at scale.
 
