@@ -1436,13 +1436,349 @@ At scale, Kubernetes scheduling failures are rarely due to simple resource exhau
 
 ---
 
-# Next Section
+# 01 - Kubernetes Scheduling (Part 5)
 
-## Part 5 - Production Incident Playbooks
+## Production Incident Playbooks — Real On-Call Scenarios (Senior SRE Level)
 
-We will cover:
-- Real-world outage scenarios
-- Step-by-step incident response
-- Kubernetes + AWS combined failures
-- Life360-scale cascading failures
-- On-call debugging simulation
+---
+
+# Objective
+
+This section simulates **real production incidents** involving Kubernetes scheduling failures at scale.
+
+These are the types of situations where:
+- Services are down or degraded
+- Deployments are blocked
+- Autoscaling is not responding fast enough
+- Multiple teams are paged simultaneously
+
+You are expected to:
+- Diagnose quickly under pressure
+- Identify root cause across multiple systems
+- Prevent recurrence, not just fix symptoms
+
+---
+
+# Incident 1: Massive Pending Pods During Deployment
+
+## Symptoms
+
+- 500+ Pods stuck in Pending
+- Deployment rollout stuck
+- No new version being released
+- Alerts firing on deployment failure
+
+---
+
+## First Response (Senior SRE)
+
+Always start with:
+
+    kubectl describe pod <sample-pod>
+
+Check:
+
+    Events:
+
+---
+
+## Possible Root Causes
+
+### 1. CPU Exhaustion Across Cluster
+- Node capacity fully utilized
+- No schedulable nodes exist
+
+---
+
+### 2. Over-restrictive Affinity Rules
+- Deployment pinned to specific nodes
+- No eligible nodes available
+
+---
+
+### 3. Node Pool Imbalance
+- Some node groups full, others unused
+
+---
+
+### 4. Autoscaler Delay
+- New nodes not yet provisioned
+
+---
+
+## Mitigation
+
+- Scale cluster manually
+- Relax deployment constraints temporarily
+- Shift traffic to healthy services
+
+---
+
+## Long-term Fix
+
+- Improve autoscaler thresholds
+- Reduce affinity constraints
+- Introduce capacity buffer strategy
+
+---
+
+# Incident 2: Multi-AZ Scheduling Failure
+
+## Symptoms
+
+- Pods stuck Pending only in specific regions
+- Partial service outage
+- Uneven traffic distribution
+
+---
+
+## Root Causes
+
+### 1. AZ-specific capacity exhaustion
+- One zone is full while others are underutilized
+
+---
+
+### 2. PVC zone binding restriction
+- Volumes locked to specific AZ
+
+---
+
+### 3. Node group misalignment
+- Some AZs missing correct instance types
+
+---
+
+## Fix
+
+- Rebalance node groups per AZ
+- Enable topology-aware scheduling
+- Replicate storage across AZs
+
+---
+
+# Incident 3: Sudden Cluster "Full" Condition
+
+## Symptoms
+
+- No new Pods can be scheduled
+- Existing Pods are healthy
+- CPU usage is only ~60%
+
+---
+
+## Root Cause
+
+This is a **fragmentation issue**, not resource exhaustion.
+
+Example:
+
+- Many small free spaces across nodes
+- No single node fits requested Pod size
+
+---
+
+## Fix
+
+- Enable bin packing optimization
+- Reduce large resource requests
+- Rebalance workloads
+
+---
+
+# Incident 4: PVC-Related Scheduling Outage
+
+## Symptoms
+
+- Pods stuck in Pending
+- PVC status = Pending
+- Deployment blocked
+
+---
+
+## Root Causes
+
+### 1. StorageClass misconfiguration
+### 2. AZ mismatch with EBS volume
+### 3. Volume limit reached in region
+
+---
+
+## Fix
+
+- Correct StorageClass
+- Align node and volume AZ
+- Pre-provision storage
+
+---
+
+# Incident 5: Priority Inversion Outage
+
+## Symptoms
+
+- Critical services not starting
+- Lower priority workloads running normally
+- Cluster appears healthy
+
+---
+
+## Root Cause
+
+- No preemption enabled
+- High-priority Pods blocked by low-priority workloads
+
+---
+
+## Fix
+
+- Enable Pod preemption
+- Adjust priority classes
+- Evict low priority workloads
+
+---
+
+# Incident 6: Autoscaler Not Responding Fast Enough
+
+## Symptoms
+
+- Pods Pending for extended time
+- Cluster eventually recovers
+- Delay impacts user traffic
+
+---
+
+## Root Causes
+
+- EC2 instance startup latency
+- Scale-up threshold too conservative
+- Image pull delays on cold nodes
+
+---
+
+## Fix
+
+- Use faster provisioning (e.g., warm pools)
+- Optimize autoscaler thresholds
+- Pre-warm nodes for peak traffic
+
+---
+
+# Incident 7: Scheduler Bottleneck Under High Load
+
+## Symptoms
+
+- Scheduling latency increases
+- Deployment delays observed
+- No direct resource exhaustion
+
+---
+
+## Root Cause
+
+- Scheduler CPU saturation
+- Too many Pending Pods evaluated simultaneously
+- Complex affinity rules increasing computation cost
+
+---
+
+## Fix
+
+- Simplify scheduling rules
+- Reduce Pod churn
+- Scale scheduler replicas (where applicable)
+
+---
+
+# Incident 8: Cascading Scheduling Failure
+
+## Symptoms
+
+- One service failure spreads across system
+- Multiple deployments fail simultaneously
+- Cluster-wide Pending Pod explosion
+
+---
+
+## Root Cause Chain
+
+1. Node group failure
+2. Capacity reduction
+3. Autoscaler delay
+4. Scheduler backlog
+5. System-wide scheduling congestion
+
+---
+
+## Fix
+
+- Restore node group health
+- Throttle deployments
+- Stabilize autoscaler behavior
+
+---
+
+# Senior SRE Incident Response Flow
+
+    Alert Triggered
+          |
+          v
+    Identify Impact Scope
+          |
+          v
+    Check Pending Pods
+          |
+          v
+    kubectl describe pod
+          |
+          v
+    Read Events
+          |
+          v
+    Classify Issue:
+        - Resource
+        - Policy
+        - Storage
+        - Topology
+        - Infrastructure
+          |
+          v
+    Validate Cluster State
+          |
+          v
+    Mitigate Immediately
+          |
+          v
+    Apply Long-term Fix
+
+---
+
+# What Interviewers Are Testing
+
+They are NOT testing Kubernetes commands.
+
+They are testing:
+
+- Can you classify complex failures quickly?
+- Can you identify multi-system interactions?
+- Can you handle ambiguity under pressure?
+- Can you reason about distributed systems?
+
+---
+
+# Senior SRE Answer Template
+
+In a production incident involving scheduling failures, I first determine the blast radius by checking the number of Pending Pods and affected services. I then inspect pod events using `kubectl describe pod` to identify scheduler-level failure reasons. I categorize the issue into resource constraints, policy constraints, storage constraints, topology constraints, or infrastructure-level failures. After validating cluster state across nodes, autoscaler, and storage systems, I apply immediate mitigation such as scaling nodes, adjusting constraints, or rerouting traffic. Finally, I implement long-term fixes such as improving autoscaling responsiveness, reducing scheduling complexity, and preventing fragmentation in node pools.
+
+---
+
+# Key Takeaways
+
+- Scheduling failures are often system-wide incidents
+- Root cause is often multi-layered, not single-node issues
+- Fragmentation is as dangerous as resource exhaustion
+- Autoscaling delay is a common real-world bottleneck
+- Senior SREs focus on system stability, not just fixes
+
+---
+
+# End of Kubernetes Scheduling Module
