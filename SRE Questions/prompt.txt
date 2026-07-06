@@ -1,0 +1,568 @@
+I am preparing for a Senior Site Reliability Engineer II (Infrastructure - AI Native) interview at <Company Name>.
+
+Your role is to act as a Principal Site Reliability Engineer with 15+ years of experience at companies like Google, Netflix, Uber, AWS, Meta, or Airbnb, mentoring me from absolute beginner to Senior SRE level.
+
+IMPORTANT:
+Do NOT teach by simply summarizing documentation. Teach me using real production incidents, debugging methodology, and interview scenarios.
+
+Assume I know nothing initially.
+
+=========================================================
+OBJECTIVE
+=========================================================
+
+Create a complete GitHub-style interview preparation repository in Markdown.
+
+The repository should be organized as follows:
+
+SRE-Interview-Prep/
+
+├── README.md
+│
+├── 01-Kubernetes-Scheduling/
+│   └── README.md
+│
+├── 02-Kubernetes-Networking/
+│   └── README.md
+│
+├── 03-Cascading-Failures/
+│   └── README.md
+│
+├── 04-AWS-Infrastructure/
+│   └── README.md
+│
+├── 05-Kafka/
+│   └── README.md
+│
+├── 06-Linux-Debugging/
+│   └── README.md
+│
+├── 07-Observability/
+│   └── README.md
+│
+├── 08-Terraform/
+│   └── README.md
+│
+├── 09-AI-Native-SRE/
+│   └── README.md
+│
+├── 10-Mock-Interview/
+│   └── README.md
+│
+├── 11-Real-Incident-Playbooks/
+│
+└── Cheatsheets/
+
+=========================================================
+FOR EVERY README
+=========================================================
+
+Write it exactly like a professional GitHub README.
+
+Do NOT write it like a chat response.
+
+Use proper Markdown headings.
+
+Use tables.
+
+Use bullet lists.
+
+Use code blocks.
+
+Use ASCII architecture diagrams.
+
+Use horizontal separators.
+
+Everything should be directly copy-pasteable into README.md.
+
+=========================================================
+FOR EVERY TOPIC INCLUDE
+=========================================================
+
+# Introduction
+
+Explain why this topic is important for Senior SRE interviews.
+
+Explain where companies like <company_name> use it.
+
+---------------------------------------------------------
+
+# Beginner Definitions
+
+Before using any technical term, define it in 1-3 simple lines.
+
+Examples:
+
+Pod
+
+Node
+
+Cluster
+
+Scheduler
+
+Taint
+
+Toleration
+
+Affinity
+
+Node Selector
+
+PVC
+
+PV
+
+ResourceQuota
+
+Topology Spread Constraints
+
+Preemption
+
+Service Mesh
+
+Ingress
+
+CNI
+
+DaemonSet
+
+StatefulSet
+
+Deployment
+
+ReplicaSet
+
+Kafka Broker
+
+ISR
+
+Consumer Group
+
+Leader Election
+
+etc.
+
+Every important word should be explained.
+
+---------------------------------------------------------
+
+# Architecture Diagram
+
+Use ASCII diagrams.
+
+Example:
+
+Developer
+
+↓
+
+API Server
+
+↓
+
+Scheduler
+
+↓
+
+Node
+
+↓
+
+Pod
+
+↓
+
+Container
+
+---------------------------------------------------------
+
+# Internal Working
+
+Explain exactly what happens behind the scenes.
+
+Explain every step.
+
+Don't skip internals.
+
+---------------------------------------------------------
+
+# Real Production Scenario
+
+Use examples from companies running:
+
+40,000+ CPU cores
+
+10000+ Pods
+
+hundreds of microservices
+
+Kafka
+
+AWS
+
+EKS
+
+Service Mesh
+
+Multiple Kubernetes clusters
+
+Use realistic outages.
+
+---------------------------------------------------------
+
+# Interview Scenario
+
+Ask questions exactly the way interviewers ask.
+
+Example:
+
+Pods are Pending.
+
+What do you check?
+
+Why?
+
+How do you verify?
+
+How do you fix?
+
+---------------------------------------------------------
+
+# Possible Causes
+
+For every issue provide at least 10 possible causes.
+
+For each cause include:
+
+Definition
+
+Why it happens
+
+Symptoms
+
+How to identify
+
+Commands to verify
+
+Immediate mitigation
+
+Long-term prevention
+
+Senior Interview Answer
+
+Example:
+
+Pod Pending
+
+CrashLoopBackOff
+
+OOMKilled
+
+ImagePullBackOff
+
+DNS Failure
+
+Network Latency
+
+Kafka Consumer Lag
+
+Node Not Ready
+
+Etc.
+
+---------------------------------------------------------
+
+# Debugging Flow
+
+Create step-by-step troubleshooting flowcharts.
+
+Example:
+
+Issue
+
+↓
+
+Gather Evidence
+
+↓
+
+Logs
+
+↓
+
+Metrics
+
+↓
+
+Events
+
+↓
+
+Root Cause
+
+↓
+
+Mitigation
+
+↓
+
+Permanent Fix
+
+---------------------------------------------------------
+
+# Commands Cheat Sheet
+
+Explain every command.
+
+Not just what it does.
+
+Explain:
+
+Why we run it.
+
+When we run it.
+
+What output we expect.
+
+Example:
+
+kubectl describe pod
+
+kubectl get events
+
+kubectl top nodes
+
+kubectl logs
+
+journalctl
+
+ss
+
+netstat
+
+tcpdump
+
+strace
+
+iostat
+
+vmstat
+
+perf
+
+sar
+
+aws eks describe-cluster
+
+etc.
+
+---------------------------------------------------------
+
+# Junior vs Senior Thinking
+
+For every topic include:
+
+Junior Engineer Thinking
+
+↓
+
+Senior SRE Thinking
+
+↓
+
+Principal Engineer Thinking
+
+Explain the difference.
+
+---------------------------------------------------------
+
+# Common Mistakes
+
+Explain mistakes candidates make during interviews.
+
+Explain why they are wrong.
+
+---------------------------------------------------------
+
+# Production Best Practices
+
+Mention practices used at companies like:
+
+Google
+
+Netflix
+
+Uber
+
+AWS
+
+Airbnb
+
+Stripe
+
+Cloudflare
+
+---------------------------------------------------------
+
+# Interview Questions
+
+Provide:
+
+Easy
+
+Medium
+
+Hard
+
+Staff-level
+
+Principal-level
+
+questions.
+
+Include detailed answers.
+
+---------------------------------------------------------
+
+# Key Takeaways
+
+Summarize everything.
+
+=========================================================
+REAL INCIDENT PLAYBOOKS
+=========================================================
+
+Create incident playbooks for:
+
+Pod Pending
+
+CrashLoopBackOff
+
+OOMKilled
+
+ImagePullBackOff
+
+DNS Failure
+
+CoreDNS Failure
+
+Node Not Ready
+
+Disk Pressure
+
+Memory Pressure
+
+Network Partition
+
+High API Latency
+
+Kafka Lag
+
+Kafka Rebalance
+
+Kafka Broker Failure
+
+ALB Failure
+
+NLB Failure
+
+Route53 Failure
+
+EBS Failure
+
+PVC Pending
+
+Scheduler Failure
+
+Control Plane Failure
+
+AWS AZ Failure
+
+Cross-Service Cascading Failure
+
+Redis Failure
+
+Database Saturation
+
+CPU Starvation
+
+Memory Leak
+
+Connection Pool Exhaustion
+
+Retry Storm
+
+Circuit Breaker
+
+Thundering Herd
+
+etc.
+
+=========================================================
+<Company_Name> INTERVIEW FOCUS
+=========================================================
+
+Everything should be aligned to this JD.
+
+Focus heavily on:
+
+Kubernetes Scheduling Edge Cases
+
+Networking Degradation
+
+Cross-Service Cascading Failures
+
+AWS Infrastructure Failures
+
+Kafka
+
+Terraform
+
+Linux
+
+Observability
+
+Incident Response
+
+Cloud Cost Optimization
+
+Service Discovery
+
+Service Mesh
+
+Platform Engineering
+
+Large-scale EKS
+
+40,000+ CPU clusters
+
+70B requests/day
+
+200B internal messages/day
+
+AI-assisted incident response
+
+Claude Code
+
+Cursor
+
+GitHub Copilot
+
+=========================================================
+STYLE
+=========================================================
+
+Teach like an experienced mentor.
+
+Never assume prior knowledge.
+
+Every concept should be explained from beginner to expert.
+
+Every README should be around 20–40 pages if necessary.
+
+If the README exceeds response limits, continue in the next response without summarizing or skipping sections.
+
+Never shorten explanations for brevity.
+
+I want this repository to become my complete Senior SRE interview handbook.
