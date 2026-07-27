@@ -1115,3 +1115,527 @@ Product mindset:
 The goal is enabling teams to deliver software quickly, safely, and consistently.
 
 ---
+---
+
+## Q36. How do you design an enterprise CI/CD platform architecture?
+
+Answer:
+
+An enterprise CI/CD platform should provide reusable delivery capabilities.
+
+Architecture:
+
+Developer interface:
+
+- Templates.
+- CLI.
+- Portal integration.
+
+Workflow layer:
+
+- Reusable pipelines.
+- Standard actions.
+
+Execution layer:
+
+- Build runners.
+- Deployment engines.
+
+Artifact layer:
+
+- Package storage.
+- Container registries.
+
+Security layer:
+
+- Policy checks.
+- Supply chain validation.
+
+Observability layer:
+
+- Pipeline metrics.
+- Logs.
+
+The platform should enable teams without creating centralized delivery bottlenecks.
+
+---
+
+## Q37. What is the role of a CI/CD platform team?
+
+Answer:
+
+The CI/CD platform team builds and maintains delivery capabilities.
+
+Responsibilities:
+
+Developer experience:
+
+- Easy pipeline creation.
+
+Automation:
+
+- Reusable workflows.
+
+Security:
+
+- Secure delivery patterns.
+
+Reliability:
+
+- Pipeline availability.
+
+Governance:
+
+- Standards and policies.
+
+Enablement:
+
+- Documentation and support.
+
+The team owns the delivery platform, not every application's pipeline.
+
+---
+
+## Q38. How do you build self-service CI/CD?
+
+Answer:
+
+Self-service CI/CD allows developers to create delivery workflows without platform tickets.
+
+Provide:
+
+Templates:
+
+- Standard pipelines.
+
+Defaults:
+
+- Secure configurations.
+
+Automation:
+
+- Repository integration.
+
+Documentation:
+
+- Clear usage.
+
+Controls:
+
+- Automated policies.
+
+The goal is reducing setup time while maintaining engineering standards.
+
+---
+
+## Q39. How do you standardize pipelines across hundreds of teams?
+
+Answer:
+
+Standardization should come from reusable capabilities.
+
+Approach:
+
+Provide:
+
+- Pipeline templates.
+- Shared workflow libraries.
+- Common security checks.
+
+Enforce:
+
+- Required controls.
+
+Allow:
+
+- Team-specific customization.
+
+Measure:
+
+- Adoption and failures.
+
+The platform should create consistency without removing team ownership.
+
+---
+
+## Q40. How do you handle pipeline customization requests?
+
+Answer:
+
+Not every customization should become a platform feature.
+
+Evaluate:
+
+Impact:
+
+- Number of teams affected.
+
+Maintenance:
+
+- Long-term ownership.
+
+Security:
+
+- Risk introduced.
+
+Complexity:
+
+- Platform impact.
+
+Options:
+
+- Add shared capability.
+- Provide extension point.
+- Allow team customization.
+
+Good platforms balance standardization and flexibility.
+
+---
+
+## Q41. How do you design CI/CD platform reliability?
+
+Answer:
+
+CI/CD is a critical engineering service.
+
+Reliability practices:
+
+SLOs:
+
+- Define availability targets.
+
+Monitoring:
+
+- Track pipeline failures.
+
+Scaling:
+
+- Handle workload growth.
+
+Recovery:
+
+- Disaster recovery plans.
+
+Testing:
+
+- Validate platform changes.
+
+The delivery platform itself must be production-grade.
+
+---
+
+## Q42. What CI/CD metrics should a platform team track?
+
+Answer:
+
+Track platform effectiveness.
+
+Reliability:
+
+- Pipeline success rate.
+- Execution failures.
+
+Performance:
+
+- Build duration.
+- Deployment duration.
+
+Adoption:
+
+- Teams using standard workflows.
+
+Developer experience:
+
+- Satisfaction.
+
+Delivery:
+
+- DORA metrics.
+
+Cost:
+
+- Runner utilization.
+
+Metrics should guide platform improvements.
+
+---
+
+## Q43. How do you improve CI/CD developer experience?
+
+Answer:
+
+Improve the workflow from code change to deployment.
+
+Reduce friction:
+
+- Faster pipelines.
+
+Improve visibility:
+
+- Better logs and status.
+
+Provide defaults:
+
+- Templates.
+
+Automate:
+
+- Repetitive tasks.
+
+Document:
+
+- Common workflows.
+
+Listen:
+
+- Developer feedback.
+
+The best pipeline is one developers do not need to fight.
+
+---
+
+## Q44. How do you handle CI/CD pipeline failures?
+
+Answer:
+
+Pipeline failures should provide fast diagnosis.
+
+Approach:
+
+Detect:
+
+- Automated notifications.
+
+Understand:
+
+- Clear error messages.
+
+Investigate:
+
+- Logs and artifacts.
+
+Fix:
+
+- Correct root cause.
+
+Improve:
+
+- Prevent recurrence.
+
+Good pipelines make failures actionable.
+
+---
+
+## Q45. How do you manage secrets in CI/CD?
+
+Answer:
+
+Secrets must never be hardcoded in pipelines.
+
+Use:
+
+Secret managers:
+
+- Centralized storage.
+
+Short-lived credentials:
+
+- Reduce exposure.
+
+Access controls:
+
+- Least privilege.
+
+Rotation:
+
+- Automatic replacement.
+
+Auditing:
+
+- Track usage.
+
+Secret management is a critical supply chain security practice.
+
+---
+
+## Q46. How do you secure CI/CD runners?
+
+Answer:
+
+Runners execute trusted build processes and require protection.
+
+Practices:
+
+Isolation:
+
+- Ephemeral environments.
+
+Permissions:
+
+- Minimal access.
+
+Images:
+
+- Hardened runner images.
+
+Network:
+
+- Controlled connectivity.
+
+Monitoring:
+
+- Activity tracking.
+
+Updates:
+
+- Regular patching.
+
+Runner security protects the entire delivery pipeline.
+
+---
+
+## Q47. How do you manage CI/CD platform upgrades?
+
+Answer:
+
+Platform upgrades require controlled lifecycle management.
+
+Process:
+
+Evaluate:
+
+- Impact.
+
+Test:
+
+- Validate compatibility.
+
+Communicate:
+
+- Migration guidance.
+
+Deploy:
+
+- Gradual rollout.
+
+Monitor:
+
+- Detect issues.
+
+Rollback:
+
+- Recovery plan.
+
+Platform changes should follow production engineering practices.
+
+---
+
+## Q48. How do you design CI/CD for microservices?
+
+Answer:
+
+Microservices require scalable delivery patterns.
+
+Practices:
+
+Independent pipelines:
+
+- Service ownership.
+
+Reusable workflows:
+
+- Common standards.
+
+Artifact versioning:
+
+- Traceable releases.
+
+Automated testing:
+
+- Integration validation.
+
+Deployment automation:
+
+- Independent releases.
+
+Observability:
+
+- Release monitoring.
+
+The platform should support autonomy with consistency.
+
+---
+
+## Q49. How do you design CI/CD for regulated environments?
+
+Answer:
+
+Regulated environments require stronger controls.
+
+Requirements:
+
+Auditability:
+
+- Complete change history.
+
+Approvals:
+
+- Risk-based controls.
+
+Security:
+
+- Mandatory scanning.
+
+Access:
+
+- Least privilege.
+
+Evidence:
+
+- Automated compliance reporting.
+
+Automation should support compliance instead of creating manual overhead.
+
+---
+
+## Q50. What does excellent CI/CD platform engineering look like?
+
+Answer:
+
+Excellent CI/CD platform engineering provides:
+
+Developer experience:
+
+- Self-service delivery.
+
+Speed:
+
+- Fast feedback loops.
+
+Reliability:
+
+- Predictable pipelines.
+
+Security:
+
+- Supply chain protection.
+
+Governance:
+
+- Automated controls.
+
+Observability:
+
+- Clear delivery insights.
+
+Metrics:
+
+- Improved DORA outcomes.
+
+Platform mindset:
+
+- Continuous improvement.
+
+The goal is enabling every engineering team to deliver software safely and efficiently.
+
+---
