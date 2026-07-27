@@ -1,0 +1,470 @@
+I am preparing for a Senior Platform Engineer / Senior Developer II (Cloud Success / Developer Experience / Internal Developer Platform) interview at a technology company.
+
+Your role is to act as a Principal Platform Engineer with 15+ years of experience at companies like Google, Netflix, AWS, Meta, Airbnb, Stripe, Shopify, or GitHub.
+
+Mentor me from interview preparation level to Senior/Staff Platform Engineer level.
+
+IMPORTANT:
+- Do not teach by simply summarizing documentation.
+- Teach using real production scenarios, architecture discussions, debugging approaches, design tradeoffs, and interview-style questions.
+- Assume I have professional experience but help me sharpen my understanding and communicate like a senior platform engineer.
+- Focus on how experienced engineers think, not just definitions.
+
+=========================================================
+MY BACKGROUND
+=========================================================
+
+I have 10+ years of experience in DevOps / Cloud / Platform Engineering.
+
+My experience includes:
+
+- Internal Developer Platforms
+- Developer Experience (DevEx)
+- GitHub Enterprise administration and governance
+- GitHub Actions
+- GitHub Apps and repository governance
+- GitHub Copilot adoption
+- Large-scale repository migrations
+- Terraform and Infrastructure as Code
+- AWS infrastructure
+- Kubernetes / EKS
+- Helm
+- ArgoCD
+- Jenkins
+- CI/CD automation
+- Docker
+- Linux
+- Ansible
+- Python / Bash automation
+- Platform governance
+- Audit controls
+- Developer productivity improvements
+- Self-service automation
+
+Examples of my experience:
+
+- Led migration of thousands of repositories between source control platforms.
+- Built and improved CI/CD workflows.
+- Created Terraform-based governance and automation.
+- Built internal automation tools and support workflows.
+- Improved developer productivity through tooling and AI-assisted development adoption.
+- Managed cloud infrastructure automation and governance.
+
+Use this background when creating interview examples and mock scenarios.
+
+Do not invent experience that I do not have.
+
+=========================================================
+TARGET ROLE CONTEXT
+=========================================================
+
+The role is a Senior Platform Engineer / Senior Developer II role focused on:
+
+- Internal Developer Platform (IDP)
+- Developer Experience (DevEx)
+- Cloud platform engineering
+- Kubernetes platform capabilities
+- EKS
+- GitHub Actions
+- GitOps workflows
+- ArgoCD
+- Argo Rollouts
+- Helm
+- Terraform
+- AWS multi-account infrastructure
+- Developer self-service capabilities
+- Platform automation
+- AI-native engineering practices
+- AI-assisted developer workflows
+- Engineering productivity improvements
+
+The team builds platforms used by hundreds of engineers.
+
+The mindset should be:
+
+"How do we enable engineers to build, test, deploy, and operate software faster and safer?"
+
+Not:
+
+"How do we manually operate infrastructure?"
+
+=========================================================
+PREPARATION OBJECTIVE
+=========================================================
+
+Create a complete Senior Platform Engineer interview handbook.
+
+The preparation should cover:
+
+1. Platform Engineering Fundamentals
+2. Internal Developer Platforms
+3. Developer Experience
+4. CI/CD Architecture
+5. GitHub Actions
+6. GitOps and ArgoCD
+7. Kubernetes/EKS for Platform Engineers
+8. Helm
+9. Terraform at Scale
+10. AWS Platform Architecture
+11. AI-Native Engineering
+12. Platform System Design
+13. Behavioral Interview Preparation
+14. Mock Interviews
+
+=========================================================
+TEACHING STYLE
+=========================================================
+
+For every topic:
+
+Explain:
+
+# Introduction
+
+Why this matters for Senior Platform Engineer interviews.
+
+Where companies at scale use it.
+
+---------------------------------------------------------
+
+# Beginner Definitions
+
+Before using technical terms, define them simply.
+
+Examples:
+
+Internal Developer Platform
+
+Golden Path
+
+Developer Portal
+
+GitOps
+
+CI/CD Pipeline
+
+Platform as a Product
+
+Self-Service Infrastructure
+
+Kubernetes Operator
+
+Helm Chart
+
+Terraform Module
+
+Infrastructure Drift
+
+Progressive Delivery
+
+etc.
+
+---------------------------------------------------------
+
+# Architecture Diagram
+
+Use ASCII diagrams.
+
+Example:
+
+Developer
+
+↓
+
+Git Repository
+
+↓
+
+CI Pipeline
+
+↓
+
+Artifact Registry
+
+↓
+
+GitOps Repository
+
+↓
+
+ArgoCD
+
+↓
+
+Kubernetes Cluster
+
+↓
+
+Production
+
+---------------------------------------------------------
+
+# Internal Working
+
+Explain:
+
+- How it works internally.
+- Why the architecture exists.
+- Design decisions.
+- Tradeoffs.
+
+---------------------------------------------------------
+
+# Real Production Scenario
+
+Use realistic examples:
+
+- Hundreds of engineers.
+- Thousands of repositories.
+- Multiple AWS accounts.
+- Multiple Kubernetes clusters.
+- Large CI/CD environments.
+- Developer productivity challenges.
+
+Explain:
+
+- Problem
+- Architecture
+- Failure modes
+- Resolution
+- Lessons learned
+
+---------------------------------------------------------
+
+# Interview Scenario
+
+Ask questions exactly like interviewers.
+
+Example:
+
+"You are responsible for building an internal developer platform for 500 engineers. How would you design it?"
+
+Then provide:
+
+- Expected senior answer.
+- Architecture.
+- Tradeoffs.
+- Follow-up questions.
+
+---------------------------------------------------------
+
+# Common Problems
+
+For every system include:
+
+Possible causes
+
+Symptoms
+
+How to investigate
+
+Commands/tools
+
+Mitigation
+
+Long-term prevention
+
+Senior-level explanation
+
+---------------------------------------------------------
+
+# Commands and Tools
+
+Explain:
+
+- Why we use the command.
+- When we use it.
+- Expected output.
+- How a senior engineer interprets results.
+
+Examples:
+
+kubectl
+
+helm
+
+argocd
+
+terraform
+
+aws cli
+
+git
+
+gh cli
+
+docker
+
+linux troubleshooting tools
+
+---------------------------------------------------------
+
+# Junior vs Senior vs Staff Thinking
+
+For every topic explain:
+
+Junior Engineer Thinking
+
+↓
+
+Senior Engineer Thinking
+
+↓
+
+Staff/Principal Engineer Thinking
+
+---------------------------------------------------------
+
+# Common Interview Mistakes
+
+Explain:
+
+- What candidates usually say.
+- Why it is incomplete.
+- What a stronger answer looks like.
+
+---------------------------------------------------------
+
+# Production Best Practices
+
+Reference practices used by companies operating large engineering organizations.
+
+---------------------------------------------------------
+
+# Interview Questions
+
+Provide:
+
+Easy
+
+Medium
+
+Hard
+
+Staff-level
+
+Principal-level
+
+questions.
+
+Include detailed answers.
+
+---------------------------------------------------------
+
+# Key Takeaways
+
+Summarize.
+
+=========================================================
+FOCUS AREAS
+=========================================================
+
+Spend extra depth on:
+
+## Internal Developer Platform
+
+Topics:
+
+- Platform as a Product
+- Platform users
+- Golden paths
+- Self-service
+- Developer portals
+- Service catalogs
+- Ownership models
+- Platform adoption metrics
+- Developer productivity metrics
+
+
+## CI/CD Platform
+
+Topics:
+
+- GitHub Actions architecture
+- Reusable workflows
+- Self-hosted runners
+- Security
+- Secrets
+- OIDC
+- Build optimization
+- Release strategies
+- Rollbacks
+
+
+## GitOps
+
+Topics:
+
+- GitOps principles
+- ArgoCD architecture
+- ApplicationSets
+- Multi-cluster deployment
+- Drift detection
+- Sync strategies
+- Progressive delivery
+
+
+## Kubernetes Platform Engineering
+
+Topics:
+
+- EKS architecture
+- Helm
+- Operators
+- Multi-tenancy
+- Cluster lifecycle
+- Platform abstractions
+- Developer experience
+
+
+## Terraform
+
+Topics:
+
+- Module design
+- State management
+- Remote backend
+- Drift detection
+- Multi-account AWS
+- Governance
+- CI/CD integration
+
+
+## AI-Native Engineering
+
+Topics:
+
+- Claude Code
+- GitHub Copilot
+- Cursor
+- AI-assisted development workflows
+- AI agents
+- AI incident response
+- AI-generated infrastructure
+- Validation and security
+- Human-in-the-loop approaches
+
+
+=========================================================
+OUTPUT FORMAT
+=========================================================
+
+Create content like a professional GitHub repository.
+
+Use:
+
+- Markdown headings
+- Tables
+- Bullet lists
+- Code blocks
+- ASCII diagrams
+- Checklists
+- Interview questions
+
+Do not write conversational explanations.
+
+The output should be directly usable as Markdown documentation.
+
+If the content exceeds response limits, continue in the next response without summarizing or reducing depth.
+
+The goal is to create my complete Senior Platform Engineer interview preparation handbook.
