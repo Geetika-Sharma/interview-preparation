@@ -2411,3 +2411,841 @@ The goal is not only faster deployments.
 The goal is:
 
 > Fast, repeatable, observable, and safe software delivery.
+
+---
+
+# CI/CD Production Incident Playbooks
+
+## Introduction
+
+A Senior Platform Engineer is not measured only by the ability to build CI/CD systems.
+
+They are expected to operate them during failures.
+
+A CI/CD platform is a production system because failures impact:
+
+- Engineering productivity
+- Release velocity
+- Production reliability
+- Business operations
+
+The debugging approach should follow:
+
+```
+Detect
+
+    |
+
+Collect Evidence
+
+    |
+
+Identify Failure Layer
+
+    |
+
+Mitigate
+
+    |
+
+Fix Root Cause
+
+    |
+
+Prevent Recurrence
+```
+
+---
+
+# Incident 1: CI Pipeline Queue Is Growing
+
+## Scenario
+
+Engineering teams report:
+
+"Builds are taking hours to start."
+
+Symptoms:
+
+- Pull requests waiting
+- Deployment delays
+- Runner queue increasing
+
+---
+
+# Possible Causes
+
+## 1. Insufficient Runner Capacity
+
+### Definition
+
+The number of available runners is lower than the number of requested jobs.
+
+Example:
+
+Available:
+
+```
+20 runners
+```
+
+Demand:
+
+```
+200 jobs
+```
+
+---
+
+### Symptoms
+
+- Jobs stuck in queued state
+- Long waiting time before execution
+
+---
+
+### Investigation
+
+Check:
+
+- Runner availability
+- Queue length
+- Job frequency
+- Execution duration
+
+---
+
+### Mitigation
+
+Short term:
+
+- Add temporary runners
+- Increase runner scaling limit
+
+Long term:
+
+- Implement autoscaling
+- Analyze capacity requirements
+
+---
+
+## 2. Long Running Pipelines
+
+### Definition
+
+Pipeline execution time increases because individual jobs take longer.
+
+---
+
+### Symptoms
+
+Example:
+
+Previous:
+
+```
+Build time: 10 minutes
+```
+
+Current:
+
+```
+Build time: 60 minutes
+```
+
+---
+
+### Investigation
+
+Analyze:
+
+- Job duration
+- Build logs
+- Dependency installation time
+- Test execution time
+
+---
+
+### Improvements
+
+- Enable caching
+- Parallelize jobs
+- Optimize tests
+- Reduce unnecessary steps
+
+---
+
+## 3. Runner Infrastructure Failure
+
+### Definition
+
+The infrastructure hosting runners becomes unhealthy.
+
+Examples:
+
+- Kubernetes nodes unavailable
+- Runner pods failing
+- Cloud resource exhaustion
+
+---
+
+### Investigation
+
+Check:
+
+Kubernetes:
+
+```
+kubectl get pods
+```
+
+Node health:
+
+```
+kubectl get nodes
+```
+
+Events:
+
+```
+kubectl describe pod <runner>
+```
+
+---
+
+### Mitigation
+
+- Restart failed runners
+- Scale infrastructure
+- Recover unhealthy nodes
+
+---
+
+# Incident 2: Pipeline Failure After Code Merge
+
+## Scenario
+
+A developer merges code.
+
+CI pipeline fails immediately.
+
+---
+
+# Investigation Approach
+
+Do not immediately rerun.
+
+First determine:
+
+```
+Is failure caused by:
+
+Code?
+
+Pipeline?
+
+Infrastructure?
+
+Dependency?
+```
+
+---
+
+# Failure Categories
+
+## Application Failure
+
+Example:
+
+Unit test failure.
+
+Symptoms:
+
+- Test assertions fail
+- Compilation errors
+
+Action:
+
+Developer fixes code.
+
+---
+
+## Pipeline Configuration Failure
+
+Example:
+
+Broken workflow syntax.
+
+Symptoms:
+
+- Workflow cannot start
+- YAML validation failure
+
+Action:
+
+Fix workflow configuration.
+
+---
+
+## Infrastructure Failure
+
+Example:
+
+Runner cannot access dependency.
+
+Symptoms:
+
+- Network errors
+- Timeout failures
+
+Action:
+
+Investigate platform infrastructure.
+
+---
+
+# Senior Debugging Method
+
+A senior engineer separates:
+
+```
+Signal
+
+from
+
+Noise
+```
+
+Example:
+
+Bad approach:
+
+"Pipeline failed. Restart it."
+
+Better approach:
+
+"Which component failed and why?"
+
+---
+
+# Incident 3: Deployment Completed But Production Is Unhealthy
+
+## Scenario
+
+CI/CD pipeline:
+
+```
+SUCCESS
+```
+
+Application:
+
+```
+ERRORS IN PRODUCTION
+```
+
+---
+
+# Investigation
+
+Check deployment timeline.
+
+Questions:
+
+- What changed?
+- Which version was deployed?
+- When did failures begin?
+
+---
+
+# Validation Steps
+
+## Check Rollout Status
+
+Example:
+
+```
+kubectl rollout status deployment application
+```
+
+Purpose:
+
+Verify whether Kubernetes considers deployment successful.
+
+---
+
+## Check Application Logs
+
+Example:
+
+```
+kubectl logs deployment/application
+```
+
+Look for:
+
+- Exceptions
+- Connection failures
+- Configuration errors
+
+---
+
+## Check Service Metrics
+
+Review:
+
+- Request errors
+- Latency
+- Saturation
+- Availability
+
+---
+
+# Possible Causes
+
+## Bad Application Release
+
+Example:
+
+New code introduces errors.
+
+---
+
+## Configuration Mistake
+
+Example:
+
+Wrong environment variable:
+
+```
+DATABASE_URL=wrong-value
+```
+
+---
+
+## Missing Dependency
+
+Example:
+
+Application requires:
+
+```
+Redis
+
+Database
+
+External API
+```
+
+but dependency is unavailable.
+
+---
+
+## Resource Changes
+
+Example:
+
+New release requires:
+
+```
+CPU: 4 cores
+
+Memory: 8GB
+```
+
+but deployment provides:
+
+```
+CPU: 1 core
+
+Memory: 512MB
+```
+
+---
+
+# Immediate Response
+
+Options:
+
+## Rollback
+
+Restore previous stable version.
+
+---
+
+## Traffic Reduction
+
+Reduce exposure while investigating.
+
+---
+
+## Disable Feature
+
+Use feature flags if available.
+
+---
+
+# Incident 4: Deployment Rollback Failed
+
+## Scenario
+
+A bad deployment occurs.
+
+Engineer attempts rollback.
+
+Rollback fails.
+
+---
+
+# Possible Causes
+
+## Database Schema Change
+
+Example:
+
+Application version:
+
+```
+v2
+```
+
+expects:
+
+```
+new database column
+```
+
+Rollback:
+
+```
+v1
+```
+
+does not understand new schema.
+
+---
+
+## Configuration Drift
+
+Production configuration differs from expected state.
+
+---
+
+## Missing Previous Artifact
+
+Old image no longer exists.
+
+---
+
+# Prevention
+
+Maintain:
+
+- Artifact retention
+- Backward-compatible migrations
+- Deployment history
+- Tested rollback procedures
+
+---
+
+# Incident 5: CI/CD Security Breach
+
+## Scenario
+
+A pipeline credential is exposed.
+
+---
+
+# Common Causes
+
+## Hardcoded Secrets
+
+Example:
+
+```
+AWS_ACCESS_KEY=xxxxx
+```
+
+stored in repository.
+
+---
+
+## Excessive Permissions
+
+Example:
+
+Pipeline can modify every cloud resource.
+
+---
+
+## Untrusted Pull Request Execution
+
+Example:
+
+External code executes with privileged credentials.
+
+---
+
+# Response
+
+Immediate actions:
+
+1. Revoke credentials.
+2. Investigate usage.
+3. Rotate secrets.
+4. Review access logs.
+
+---
+
+# Prevention
+
+Implement:
+
+- OIDC authentication
+- Least privilege access
+- Secret scanning
+- Protected environments
+- Approval workflows
+
+---
+
+# Pipeline Debugging Methodology
+
+## Step 1: Identify Failure Layer
+
+Always classify the problem.
+
+```
+Developer Code
+
+     |
+
+Pipeline Logic
+
+     |
+
+Runner Infrastructure
+
+     |
+
+External Dependency
+
+     |
+
+Deployment Environment
+```
+
+---
+
+# Step 2: Collect Evidence
+
+Collect:
+
+- Error messages
+- Logs
+- Metrics
+- Recent changes
+- Deployment history
+
+---
+
+# Step 3: Compare Healthy vs Failed
+
+Example:
+
+Working pipeline:
+
+```
+Build: 8 minutes
+```
+
+Failed pipeline:
+
+```
+Build: 45 minutes
+```
+
+Difference provides clues.
+
+---
+
+# Step 4: Mitigate First
+
+During production incidents:
+
+Priority:
+
+```
+Restore Service
+
+        before
+
+Permanent Fix
+```
+
+---
+
+# CI/CD Observability
+
+A mature platform monitors itself.
+
+---
+
+# Important Metrics
+
+## Pipeline Success Rate
+
+Measures reliability.
+
+Example:
+
+```
+Successful pipelines / Total pipelines
+```
+
+---
+
+## Pipeline Duration
+
+Measures developer velocity.
+
+---
+
+## Queue Time
+
+Measures capacity problems.
+
+---
+
+## Deployment Frequency
+
+Measures delivery speed.
+
+---
+
+## Change Failure Rate
+
+Measures deployment safety.
+
+---
+
+## Mean Recovery Time
+
+Measures operational response.
+
+---
+
+# Platform Dashboard Example
+
+A CI/CD platform dashboard should show:
+
+```
+Pipeline Health
+
+Build Success Rate
+
+Average Duration
+
+Runner Availability
+
+Deployment Status
+
+Failed Workflows
+
+Security Findings
+```
+
+---
+
+# Senior Interview Scenario
+
+## Question
+
+A company has thousands of repositories. Developers complain that CI pipelines are slow. How do you approach the problem?
+
+---
+
+## Strong Answer
+
+"I would first avoid assuming the solution is adding more infrastructure.
+
+I would measure the entire pipeline lifecycle:
+
+- Queue time
+- Runner availability
+- Build duration
+- Test duration
+- Dependency download time
+- Artifact storage performance
+
+Based on findings, I would improve capacity planning, caching, parallelization, reusable workflows, and build optimization.
+
+The goal is reducing developer feedback time while maintaining reliability."
+
+---
+
+# Senior vs Junior Thinking
+
+## Junior Engineer
+
+"Increase runners."
+
+---
+
+## Senior Engineer
+
+"Understand whether the bottleneck is capacity, pipeline design, dependencies, or infrastructure."
+
+---
+
+## Principal Engineer
+
+"Create a scalable delivery platform with measurable engineering outcomes."
+
+---
+
+# CI/CD Module Summary
+
+A Senior Platform Engineer should be able to explain:
+
+## Platform Architecture
+
+- Enterprise CI/CD design
+- GitHub Actions architecture
+- Runner infrastructure
+- Workflow patterns
+
+## Developer Experience
+
+- Self-service pipelines
+- Templates
+- Golden paths
+- Platform adoption
+
+## Delivery Safety
+
+- GitOps
+- Progressive delivery
+- Canary releases
+- Rollbacks
+
+## Reliability
+
+- Pipeline observability
+- Incident response
+- Capacity planning
+
+## Security
+
+- OIDC
+- Secrets management
+- Least privilege
+- Supply chain protection
+
+---
+
+# Final Interview Statement
+
+A strong Senior Platform Engineer answer:
+
+"I view CI/CD as an internal platform product. My responsibility is not only to automate deployments but to create a reliable delivery ecosystem where engineers can safely ship software at scale. That requires reusable workflows, secure automation, observability, progressive delivery, and continuous improvement based on developer feedback."
